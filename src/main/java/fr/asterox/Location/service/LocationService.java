@@ -10,19 +10,31 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fr.asterox.Location.controller.RewardsCentralController;
+import fr.asterox.Location.controller.UserManagementController;
 import fr.asterox.Location.dto.LocationDTO;
 import fr.asterox.Location.dto.NearbyAttractionDTO;
 import gpsUtil.GpsUtil;
 import gpsUtil.location.Location;
+import gpsUtil.location.VisitedLocation;
 import rewardCentral.RewardCentral;
 
 @Service
-public class LocationService {
-	private static final double STATUTE_MILES_PER_NAUTICAL_MILE = 1.15077945;
-	private Logger logger = LoggerFactory.getLogger(LocationService.class);
+public class LocationService implements ILocationService {
 	@Autowired
 	private GpsUtil gpsUtil;
+
+	@Autowired
 	private RewardCentral rewardsCentral;
+
+	@Autowired
+	private UserManagementController userManagementController;
+
+	@Autowired
+	private RewardsCentralController rewardsCentralController;
+
+	private Logger logger = LoggerFactory.getLogger(LocationService.class);
+	private static final double STATUTE_MILES_PER_NAUTICAL_MILE = 1.15077945;
 
 	public LocationService() {
 		super();
@@ -34,10 +46,21 @@ public class LocationService {
 
 	}
 
+	@Override
+	public VisitedLocation trackUserLocation(String userName) {
+		VisitedLocation visitedLocation = gpsUtil.getUserLocation(userManagementController.getUserId(userName));
+		logger.debug("adding visited location to user :" + userName);
+		userManagementController.addVisitedLocation(userName, visitedLocation);
+		logger.debug("calculating rewards for user :" + userName);
+		rewardsCentralController.calculateRewards(userName);
+		return visitedLocation;
+	}
+
+	@Override
 	public List<NearbyAttractionDTO> getFiveNearbyAttractions(LocationDTO visitedLocation, UUID userId) {
 		Comparator<Location> distanceComparator = Comparator
 				.comparing(location -> this.getDistance(visitedLocation, location));
-
+		logger.debug("getting five nearest attractions for user with userId :" + userId);
 		return gpsUtil.getAttractions().stream().sorted(distanceComparator).limit(5)
 				.map(attraction -> new NearbyAttractionDTO(attraction.attractionName, attraction.latitude,
 						attraction.longitude, visitedLocation.latitude, visitedLocation.longitude,
