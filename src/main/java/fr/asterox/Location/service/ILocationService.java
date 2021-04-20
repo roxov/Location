@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import fr.asterox.Location.dto.LocationDTO;
 import fr.asterox.Location.dto.NearbyAttractionDTO;
-import gpsUtil.location.VisitedLocation;
 
 /**
  * 
@@ -13,7 +12,9 @@ import gpsUtil.location.VisitedLocation;
  *
  */
 public interface ILocationService {
-	public VisitedLocation trackUserLocation(String userName);
+	public String trackUserLocation(String userName);
+
+	public void calculateUserLocation(String userName);
 
 	public List<NearbyAttractionDTO> getFiveNearbyAttractions(LocationDTO visitedLocation, UUID userId);
 }

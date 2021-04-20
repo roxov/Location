@@ -1,62 +1,42 @@
 package fr.asterox.Location;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import fr.asterox.Location.dto.LocationDTO;
-import fr.asterox.Location.dto.NearbyAttractionDTO;
-import fr.asterox.Location.service.LocationService;
-import gpsUtil.GpsUtil;
-
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class LocationServiceIT {
 
-	LocationService locationService;
+	@Autowired
+	private MockMvc mockMvc;
 
-	@BeforeEach
-	public void setUp() {
-		Locale.setDefault(Locale.US);
-		GpsUtil gpsUtil = new GpsUtil();
-		locationService = new LocationService();
+	@Test
+	public void givenAUsername_whenTrackLocation_thenReturnOkAndInformationToUser() throws Exception {
+		String jsonResponse = mockMvc
+				.perform(MockMvcRequestBuilders.get("/trackLocation?userName={userName}", "jo")
+						.accept(MediaType.APPLICATION_JSON))
+				.andDo(print()).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+		assertEquals("The calculation of your location is on process", jsonResponse);
 	}
 
 	@Test
-	public void givenAUser_whenTrackUserLocation_thenReturnUserIdOnVisitedLocation() {
-		// GIVEN
-//		UUID userId = UUID.randomUUID();
-//		VisitedLocation visitedLocation = new VisitedLocation(userId, new Location(14.4, 25.5), new Date());
-//		when(gpsUtil.getUserLocation(userId)).thenReturn(visitedLocation);
-//		when(userManagementController.getUserId("jon")).thenReturn(userId);
-//		doNothing().when(userManagementController).addVisitedLocation("jon", visitedLocation);
-//		doNothing().when(rewardsCentralController).calculateRewards("jon");
-//
-//		// WHEN
-//		VisitedLocation result = locationService.trackUserLocation("jon");
-////		VisitedLocation visitedLocation = gpsUtil.getUserLocation(userManagementController.getUserId(userName));
-////		userManagementController.addVisitedLocations(userName, visitedLocation);
-////		rewardsCentralController.calculateRewards(userName);
-//		// THEN
-//		assertTrue(visitedLocation.equals(result));
-	}
-
-	@Test
-	public void givenALocation_whenGetFiveNearbyAttractions_thenReturnAListOfFiveAttractions() {
-		// GIVEN
-		LocationDTO location = new LocationDTO(-120.4, 114.5);
-
-		// WHEN
-		List<NearbyAttractionDTO> attractions = locationService.getFiveNearbyAttractions(location, UUID.randomUUID());
-
-		// THEN
-		assertEquals(5, attractions.size());
+	public void givenAUsername_whenGetNearbyAttractions_thenReturnFiveAttractions() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/getNearbyAttractions?userName={userName}", "jo")
+				.accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(5));
 	}
 
 }

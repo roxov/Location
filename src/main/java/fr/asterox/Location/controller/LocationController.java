@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import fr.asterox.Location.dto.LocationDTO;
 import fr.asterox.Location.dto.NearbyAttractionDTO;
 import fr.asterox.Location.service.LocationService;
-import gpsUtil.location.Location;
 
 @RestController
 public class LocationController {
@@ -27,9 +26,9 @@ public class LocationController {
 	private Logger logger = LoggerFactory.getLogger(LocationController.class);
 
 	@GetMapping("/trackLocation")
-	public Location trackLocation(@RequestParam String userName) {
+	public String trackLocation(@RequestParam String userName) {
 		logger.debug("tracking location of user :" + userName);
-		return locationService.trackUserLocation(userName).location;
+		return locationService.trackUserLocation(userName);
 	}
 
 	@GetMapping("/getNearbyAttractions")

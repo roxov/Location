@@ -1,74 +1,41 @@
 package fr.asterox.Location.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 
-import java.util.Date;
-import java.util.Locale;
+import java.util.List;
 import java.util.UUID;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import fr.asterox.Location.controller.RewardsCentralController;
-import fr.asterox.Location.controller.UserManagementController;
+import fr.asterox.Location.dto.LocationDTO;
+import fr.asterox.Location.dto.NearbyAttractionDTO;
 import gpsUtil.GpsUtil;
-import gpsUtil.location.Location;
-import gpsUtil.location.VisitedLocation;
+import rewardCentral.RewardCentral;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class LocationServiceTest {
-
-	@Mock
-	UserManagementController userManagementController;
-
-	@Mock
-	RewardsCentralController rewardsCentralController;
-
-	@Mock
-	GpsUtil gpsUtil;
-
-	@InjectMocks
+	@Autowired
 	LocationService locationService;
 
-	@BeforeEach
-	public void setUp() {
-		Locale.setDefault(Locale.US);
-	}
+	@Autowired
+	GpsUtil gpsUtil;
+
+	@Autowired
+	RewardCentral rewardsCentral;
 
 	@Test
-	public void givenAUser_whenTrackUserLocation_thenReturnUserIdOnVisitedLocation() {
+	public void givenALocation_whenGetFiveNearbyAttractions_thenReturnAListOfFiveAttractions() {
 		// GIVEN
-		UUID userId = UUID.randomUUID();
-		VisitedLocation visitedLocation = new VisitedLocation(userId, new Location(14.4, 25.5), new Date());
-		when(userManagementController.getUserId("jon")).thenReturn(userId);
-		when(gpsUtil.getUserLocation(userId)).thenReturn(visitedLocation);
-
-		doNothing().when(userManagementController).addVisitedLocation("jon", visitedLocation);
-		doNothing().when(rewardsCentralController).calculateRewards("jon");
+		UUID userId = UUID.fromString("333e4bf3-ee62-4a67-b7d7-b0dc06989c6e");
+		LocationDTO location = new LocationDTO(-120.4, 114.5);
 
 		// WHEN
-		VisitedLocation result = locationService.trackUserLocation("jon");
+		List<NearbyAttractionDTO> attractions = locationService.getFiveNearbyAttractions(location, userId);
 
 		// THEN
-		assertEquals(visitedLocation, result);
+		assertEquals(5, attractions.size());
 	}
-
-//	@Test
-//	public void givenALocation_whenGetFiveNearbyAttractions_thenReturnAListOfFiveAttractions() {
-//		// GIVEN
-//		LocationDTO location = new LocationDTO(-120.4, 114.5);
-//
-//		// WHEN
-//		List<NearbyAttractionDTO> attractions = locationService.getFiveNearbyAttractions(location, UUID.randomUUID());
-//
-//		// THEN
-//		assertEquals(5, attractions.size());
-//	}
 
 }
