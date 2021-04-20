@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,13 +26,13 @@ public class LocationController {
 
 	private Logger logger = LoggerFactory.getLogger(LocationController.class);
 
-	@RequestMapping("/trackLocation")
+	@GetMapping("/trackLocation")
 	public Location trackLocation(@RequestParam String userName) {
 		logger.debug("tracking location of user :" + userName);
 		return locationService.trackUserLocation(userName).location;
 	}
 
-	@RequestMapping("/getNearbyAttractions")
+	@GetMapping("/getNearbyAttractions")
 	public List<NearbyAttractionDTO> getNearbyAttractions(@RequestParam String userName) {
 		logger.debug("getting nearby attractions for user :" + userName);
 		LocationDTO visitedLocation = userManagementController.getLastLocation(userName);

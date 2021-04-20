@@ -3,6 +3,9 @@ package fr.asterox.Location.service;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -40,10 +43,20 @@ public class LocationService implements ILocationService {
 		super();
 	}
 
-	public LocationService(GpsUtil gpsUtil) {
-		this.rewardsCentral = new RewardCentral();
-		this.gpsUtil = gpsUtil;
+	public VisitedLocation trackUserThreadMethod(String userName) throws InterruptedException, ExecutionException {
+		// A mettre dans le main ou juste remplacer trackUserLocation ci-dessous ?
+		// Faut-il éclater les méthodes (controller appelés) dans le service ?
+		Callable<VisitedLocation> visitedLocationOfUser = () -> gpsUtil
+				.getUserLocation(userManagementController.getUserId(userName));
+		FutureTask<VisitedLocation> getVisitedLocationOfUser = new FutureTask<>(visitedLocationOfUser);
 
+		Thread t1 = new Thread(getVisitedLocationOfUser);
+		Thread t2 = new Thread(() -> rewardsCentralController.calculateRewards(userName));
+
+		t1.start();
+		t2.start();
+
+		return getVisitedLocationOfUser.get();
 	}
 
 	@Override
