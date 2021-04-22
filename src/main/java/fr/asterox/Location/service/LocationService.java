@@ -10,10 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fr.asterox.Location.controller.RewardsCentralController;
-import fr.asterox.Location.controller.UserManagementController;
 import fr.asterox.Location.dto.LocationDTO;
 import fr.asterox.Location.dto.NearbyAttractionDTO;
+import fr.asterox.Location.proxy.RewardsCentralProxy;
+import fr.asterox.Location.proxy.UserManagementProxy;
 import gpsUtil.GpsUtil;
 import gpsUtil.location.Location;
 import gpsUtil.location.VisitedLocation;
@@ -28,10 +28,10 @@ public class LocationService implements ILocationService {
 	private RewardCentral rewardsCentral;
 
 	@Autowired
-	private UserManagementController userManagementController;
+	private UserManagementProxy userManagementProxy;
 
 	@Autowired
-	private RewardsCentralController rewardsCentralController;
+	private RewardsCentralProxy rewardsCentralProxy;
 
 	private Logger logger = LoggerFactory.getLogger(LocationService.class);
 	private static final double STATUTE_MILES_PER_NAUTICAL_MILE = 1.15077945;
@@ -49,11 +49,11 @@ public class LocationService implements ILocationService {
 
 	@Override
 	public void calculateUserLocation(String userName) {
-		VisitedLocation visitedLocation = gpsUtil.getUserLocation(userManagementController.getUserId(userName));
+		VisitedLocation visitedLocation = gpsUtil.getUserLocation(userManagementProxy.getUserId(userName));
 		logger.debug("adding visited location to user :" + userName);
-		userManagementController.addVisitedLocation(userName, visitedLocation);
+		userManagementProxy.addVisitedLocation(userName, visitedLocation);
 		logger.debug("calculating rewards for user :" + userName);
-		rewardsCentralController.calculateRewards(userName);
+		rewardsCentralProxy.calculateRewards(userName);
 	}
 
 	@Override

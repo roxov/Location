@@ -2,11 +2,11 @@ package fr.asterox.Location.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fr.asterox.Location.controller.RewardsCentralController;
+import fr.asterox.Location.proxy.RewardsCentralProxy;
 
 public class CalculateRewards implements Runnable {
 	@Autowired
-	RewardsCentralController rewardsCentralController;
+	RewardsCentralProxy rewardsCentralProxy;
 
 	String userName;
 
@@ -17,6 +17,6 @@ public class CalculateRewards implements Runnable {
 
 	@Override
 	public void run() {
-		rewardsCentralController.calculateRewards(userName);
+		rewardsCentralProxy.calculateRewards(userName);
 	}
 }

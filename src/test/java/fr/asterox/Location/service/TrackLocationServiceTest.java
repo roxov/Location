@@ -17,8 +17,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import fr.asterox.Location.controller.RewardsCentralController;
-import fr.asterox.Location.controller.UserManagementController;
+import fr.asterox.Location.proxy.RewardsCentralProxy;
+import fr.asterox.Location.proxy.UserManagementProxy;
 import gpsUtil.GpsUtil;
 import gpsUtil.location.Location;
 import gpsUtil.location.VisitedLocation;
@@ -28,10 +28,10 @@ import rewardCentral.RewardCentral;
 public class TrackLocationServiceTest {
 
 	@Mock
-	UserManagementController userManagementController;
+	UserManagementProxy userManagementProxy;
 
 	@Mock
-	RewardsCentralController rewardsCentralController;
+	RewardsCentralProxy rewardsCentralProxy;
 
 	@Mock
 	RewardCentral rewardsCentral;
@@ -48,23 +48,24 @@ public class TrackLocationServiceTest {
 	}
 
 	@Test
-	public void givenAUser_whenTrackUserLocation_thenReturnUserIdOnVisitedLocation() {
+	public void givenAUser_whenTrackUserLocation_thenReturnUserIdOnVisitedLocation() throws InterruptedException {
 		// GIVEN
 		UUID userId = UUID.randomUUID();
 		VisitedLocation visitedLocation = new VisitedLocation(userId, new Location(14.4, 25.5), new Date());
-		when(userManagementController.getUserId("jon")).thenReturn(userId);
+		when(userManagementProxy.getUserId("jon")).thenReturn(userId);
 		when(gpsUtil.getUserLocation(userId)).thenReturn(visitedLocation);
 
-		doNothing().when(userManagementController).addVisitedLocation("jon", visitedLocation);
-		doNothing().when(rewardsCentralController).calculateRewards("jon");
+		doNothing().when(userManagementProxy).addVisitedLocation("jon", visitedLocation);
+		doNothing().when(rewardsCentralProxy).calculateRewards("jon");
 
 		// WHEN
 		locationService.trackUserLocation("jon");
+		Thread.sleep(1000);
 
 		// THEN
-		verify(userManagementController, Mockito.times(1)).getUserId(anyString());
+		verify(userManagementProxy, Mockito.times(1)).getUserId(anyString());
 		verify(gpsUtil, Mockito.times(1)).getUserLocation(userId);
-		verify(userManagementController, Mockito.times(1)).addVisitedLocation("jon", visitedLocation);
-		verify(rewardsCentralController, Mockito.times(1)).calculateRewards(anyString());
+		verify(userManagementProxy, Mockito.times(1)).addVisitedLocation("jon", visitedLocation);
+		verify(rewardsCentralProxy, Mockito.times(1)).calculateRewards(anyString());
 	}
 }

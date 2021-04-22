@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.asterox.Location.dto.LocationDTO;
 import fr.asterox.Location.dto.NearbyAttractionDTO;
+import fr.asterox.Location.proxy.UserManagementProxy;
 import fr.asterox.Location.service.LocationService;
 
 @RestController
@@ -21,7 +22,7 @@ public class LocationController {
 	private LocationService locationService;
 
 	@Autowired
-	private UserManagementController userManagementController;
+	private UserManagementProxy userManagementProxy;
 
 	private Logger logger = LoggerFactory.getLogger(LocationController.class);
 
@@ -34,8 +35,8 @@ public class LocationController {
 	@GetMapping("/getNearbyAttractions")
 	public List<NearbyAttractionDTO> getNearbyAttractions(@RequestParam String userName) {
 		logger.debug("getting nearby attractions for user :" + userName);
-		LocationDTO visitedLocation = userManagementController.getLastLocation(userName);
-		UUID userId = userManagementController.getUserId(userName);
+		LocationDTO visitedLocation = userManagementProxy.getLastLocation(userName);
+		UUID userId = userManagementProxy.getUserId(userName);
 		return locationService.getFiveNearbyAttractions(visitedLocation, userId);
 	}
 }
