@@ -3,6 +3,8 @@ package fr.asterox.Location.controller;
 import java.util.List;
 import java.util.UUID;
 
+import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +29,23 @@ public class LocationController {
 	private Logger logger = LoggerFactory.getLogger(LocationController.class);
 
 	@GetMapping("/trackLocation")
-	public String trackLocation(@RequestParam String userName) {
+	public String trackLocation(@RequestParam @NotNull(message = "username is compulsory") String userName) {
 		logger.debug("tracking location of user :" + userName);
 		return locationService.trackUserLocation(userName);
 	}
 
 	@GetMapping("/getNearbyAttractions")
-	public List<NearbyAttractionDTO> getNearbyAttractions(@RequestParam String userName) {
+	public List<NearbyAttractionDTO> getNearbyAttractions(
+			@RequestParam @NotNull(message = "username is compulsory") String userName) {
 		logger.debug("getting nearby attractions for user :" + userName);
 		LocationDTO visitedLocation = userManagementProxy.getLastLocation(userName);
 		UUID userId = userManagementProxy.getUserId(userName);
 		return locationService.getFiveNearbyAttractions(visitedLocation, userId);
+	}
+
+	@GetMapping("/testCalculateLocation")
+	public void testCalculateLocation(@RequestParam String userName) {
+		logger.debug("tracking location for tests");
+		locationService.calculateUserLocation(userName);
 	}
 }

@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import fr.asterox.Location.proxy.RewardsCentralProxy;
 import fr.asterox.Location.proxy.UserManagementProxy;
 import gpsUtil.GpsUtil;
 import gpsUtil.location.Location;
@@ -29,9 +28,6 @@ public class TrackLocationServiceTest {
 
 	@Mock
 	UserManagementProxy userManagementProxy;
-
-	@Mock
-	RewardsCentralProxy rewardsCentralProxy;
 
 	@Mock
 	RewardCentral rewardsCentral;
@@ -56,7 +52,6 @@ public class TrackLocationServiceTest {
 		when(gpsUtil.getUserLocation(userId)).thenReturn(visitedLocation);
 
 		doNothing().when(userManagementProxy).addVisitedLocation("jon", visitedLocation);
-		doNothing().when(rewardsCentralProxy).calculateRewards("jon");
 
 		// WHEN
 		locationService.trackUserLocation("jon");
@@ -66,6 +61,5 @@ public class TrackLocationServiceTest {
 		verify(userManagementProxy, Mockito.times(1)).getUserId(anyString());
 		verify(gpsUtil, Mockito.times(1)).getUserLocation(userId);
 		verify(userManagementProxy, Mockito.times(1)).addVisitedLocation("jon", visitedLocation);
-		verify(rewardsCentralProxy, Mockito.times(1)).calculateRewards(anyString());
 	}
 }

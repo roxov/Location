@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import fr.asterox.Location.dto.LocationDTO;
 import fr.asterox.Location.dto.NearbyAttractionDTO;
-import fr.asterox.Location.proxy.RewardsCentralProxy;
 import fr.asterox.Location.proxy.UserManagementProxy;
 import gpsUtil.GpsUtil;
 import gpsUtil.location.Location;
@@ -30,9 +29,6 @@ public class LocationService implements ILocationService {
 	@Autowired
 	private UserManagementProxy userManagementProxy;
 
-	@Autowired
-	private RewardsCentralProxy rewardsCentralProxy;
-
 	private Logger logger = LoggerFactory.getLogger(LocationService.class);
 	private static final double STATUTE_MILES_PER_NAUTICAL_MILE = 1.15077945;
 
@@ -44,6 +40,7 @@ public class LocationService implements ILocationService {
 	public String trackUserLocation(String userName) {
 		Thread t1 = new Thread(() -> this.calculateUserLocation(userName));
 		t1.start();
+
 		return "The calculation of your location is on process";
 	}
 
@@ -52,8 +49,6 @@ public class LocationService implements ILocationService {
 		VisitedLocation visitedLocation = gpsUtil.getUserLocation(userManagementProxy.getUserId(userName));
 		logger.debug("adding visited location to user :" + userName);
 		userManagementProxy.addVisitedLocation(userName, visitedLocation);
-		logger.debug("calculating rewards for user :" + userName);
-		rewardsCentralProxy.calculateRewards(userName);
 	}
 
 	@Override
