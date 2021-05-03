@@ -21,16 +21,12 @@ import fr.asterox.Location.proxy.UserManagementProxy;
 import gpsUtil.GpsUtil;
 import gpsUtil.location.Location;
 import gpsUtil.location.VisitedLocation;
-import rewardCentral.RewardCentral;
 
 @ExtendWith(MockitoExtension.class)
 public class TrackLocationServiceTest {
 
 	@Mock
 	UserManagementProxy userManagementProxy;
-
-	@Mock
-	RewardCentral rewardsCentral;
 
 	@Mock
 	GpsUtil gpsUtil;

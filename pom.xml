@@ -47,12 +47,6 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.javamoney</groupId>
-			<artifactId>moneta</artifactId>
-			<version>1.4.2</version>
-			<type>pom</type>
-		</dependency>
-		<dependency>
 			<groupId>com.jsoniter</groupId>
 			<artifactId>jsoniter</artifactId>
 			<version>0.9.23</version>
@@ -62,10 +56,26 @@
 			<artifactId>validation-api</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.jacoco</groupId>
 			<artifactId>jacoco-maven-plugin</artifactId>
 			<version>0.8.5</version>
 			<type>maven-plugin</type>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-install-plugin</artifactId>
+			<version>3.0.0-M1</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.asterox</groupId>
+			<artifactId>gpsUtil</artifactId>
+			<version>1.0</version>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
@@ -102,9 +112,10 @@
 					</dependency>
 				</dependencies>
 				<configuration>
-					<excludes>
-						<exclude>**/*IT.java</exclude>
-					</excludes>
+					<includes>
+						<include>**/*Test.java</include>
+						<include>**/*IT.java</include>
+					</includes>
 				</configuration>
 				<executions>
 					<execution>
@@ -153,18 +164,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
 				<version>3.0.0-M5</version>
-				<configuration>
-					<linkXRef>false</linkXRef>
-				</configuration>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>report-only</report>
-						</reports>
-					</reportSet>
-				</reportSets>
 			</plugin>
-
 		</plugins>
 	</reporting>
 </project>

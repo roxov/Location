@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 
 import fr.asterox.Location.dto.LocationDTO;
 import fr.asterox.Location.dto.NearbyAttractionDTO;
+import fr.asterox.Location.proxy.RewardsCentralProxy;
 import fr.asterox.Location.proxy.UserManagementProxy;
 import gpsUtil.GpsUtil;
 import gpsUtil.location.Location;
 import gpsUtil.location.VisitedLocation;
-import rewardCentral.RewardCentral;
 
 @Service
 public class LocationService implements ILocationService {
@@ -24,7 +24,7 @@ public class LocationService implements ILocationService {
 	private GpsUtil gpsUtil;
 
 	@Autowired
-	private RewardCentral rewardsCentral;
+	private RewardsCentralProxy rewardsCentralProxy;
 
 	@Autowired
 	private UserManagementProxy userManagementProxy;
@@ -40,7 +40,6 @@ public class LocationService implements ILocationService {
 	public String trackUserLocation(String userName) {
 		Thread t1 = new Thread(() -> this.calculateUserLocation(userName));
 		t1.start();
-
 		return "The calculation of your location is on process";
 	}
 
@@ -60,7 +59,7 @@ public class LocationService implements ILocationService {
 				.map(attraction -> new NearbyAttractionDTO(attraction.attractionName, attraction.latitude,
 						attraction.longitude, visitedLocation.latitude, visitedLocation.longitude,
 						this.getDistance(visitedLocation, attraction),
-						rewardsCentral.getAttractionRewardPoints(attraction.attractionId, userId)))
+						rewardsCentralProxy.getAttractionRewardPoints(attraction.attractionId, userId)))
 				.collect(Collectors.toList());
 	}
 

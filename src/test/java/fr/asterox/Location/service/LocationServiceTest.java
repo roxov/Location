@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import fr.asterox.Location.dto.LocationDTO;
 import fr.asterox.Location.dto.NearbyAttractionDTO;
 import gpsUtil.GpsUtil;
-import rewardCentral.RewardCentral;
 
 @SpringBootTest
 public class LocationServiceTest {
@@ -21,9 +20,6 @@ public class LocationServiceTest {
 
 	@Autowired
 	GpsUtil gpsUtil;
-
-	@Autowired
-	RewardCentral rewardsCentral;
 
 	@Test
 	public void givenALocation_whenGetFiveNearbyAttractions_thenReturnAListOfFiveAttractions() {
