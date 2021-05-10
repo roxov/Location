@@ -3,6 +3,8 @@ package fr.asterox.Location.service;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -31,6 +33,7 @@ public class LocationService implements ILocationService {
 
 	private Logger logger = LoggerFactory.getLogger(LocationService.class);
 	private static final double STATUTE_MILES_PER_NAUTICAL_MILE = 1.15077945;
+	private ExecutorService executor = Executors.newWorkStealingPool();
 
 	public LocationService() {
 		super();
@@ -38,8 +41,8 @@ public class LocationService implements ILocationService {
 
 	@Override
 	public String trackUserLocation(String userName) {
-		Thread t1 = new Thread(() -> this.calculateUserLocation(userName));
-		t1.start();
+		executor.submit(() -> this.calculateUserLocation(userName));
+
 		return "The calculation of your location is on process";
 	}
 
